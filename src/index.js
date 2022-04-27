@@ -92,6 +92,10 @@ resolver.define('add-points', async (d) => {
   const awardAccountId = d.payload;
   const awardedByAccountId = d.context.accountId;
 
+  if(awardedByAccountId == awardAccountId) {
+    return;
+  }
+
   let awardHistory = await storage.get(`gamification-awards-${awardedByAccountId}`);
 
   if(awardHistory) {
