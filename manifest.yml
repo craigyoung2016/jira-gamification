@@ -21,10 +21,6 @@ resources:
     path: static/gamification/build
     tunnel:
       port: 3000
-  - key: award
-    path: static/gamification/build
-    tunnel:
-      port: 3000
 app:
   id: ari:cloud:ecosystem::app/851e3010-2d64-4778-9c23-7380d8f086c8
 permissions:
