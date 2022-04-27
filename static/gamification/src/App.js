@@ -6,17 +6,17 @@ function App() {
   const [users, setUsers] = useState(null);
 
   async function updatePoints() {
-    const updatedUsers = await invoke('get-users');
-
-    for(const i in updatedUsers) {
-      const user = updatedUsers[i];
-      const pointsSpan = $(`#${user.author.accountId} .points`);
+    $('#users .user').each(async function () {      
+      const accountId = $(this).attr('id');
+      const pointsSpan = $(this).find('.points');
+      const currentPoints = await invoke('get-points-for-user', accountId);
       const oldPoints = pointsSpan.data('points');
-      if(oldPoints < user.points) {
-        pointsSpan.text(user.points);
-        pointsSpan.data('points', user.points);
+
+      if(oldPoints < currentPoints) {
+        pointsSpan.text(currentPoints);
+        pointsSpan.data('points', currentPoints);
       }
-    }
+    });
   }
 
   function awardUser(accountId) {
@@ -29,15 +29,15 @@ function App() {
   }, []); 
 
   useEffect(() => {
-    setInterval(() => updatePoints(), 3000);
+    setInterval(() => updatePoints(), 1000);
   }, []);
 
   const Users = () => (
-    <div>
+    <div id='users'>
       {users.sort((a,b) => { return a.author.displayName.localeCompare(b.author.displayName) }).map(user => {
           return (
-            <div id={user.author.accountId} style={{ display: 'flex' }}>
-              <span>{user.author.displayName}</span>
+            <div id={user.author.accountId} className='user' style={{ display: 'flex' }}>
+              <span>User: {user.author.displayName}</span>
               <span className='points' data-points={user.points}>{user.points}</span>
               { !user.isCurrentUser && user.canAward && (
                 <button onClick={() => {
