@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { invoke, Modal } from '@forge/bridge';
+import { invoke } from '@forge/bridge';
 import $ from 'jquery';
 
 function App() {
   const [users, setUsers] = useState(null);
+  const audio = new Audio('./sounds/points-joao-janz.wav');
 
   async function updatePoints() {
     $('#users .user').each(async function () {      
@@ -13,8 +14,23 @@ function App() {
       const oldPoints = pointsSpan.data('points');
 
       if(oldPoints < currentPoints) {
-        pointsSpan.text(currentPoints);
         pointsSpan.data('points', currentPoints);
+
+        pointsSpan.addClass('points-changing');
+        setTimeout(function() {
+          pointsSpan.removeClass('points-changing')
+        }, 1000);
+
+        $({points: oldPoints}).animate({points: currentPoints}, {
+          duration: 1000,
+          step: function() {
+            pointsSpan.text(`${Math.ceil(this.points)}b`);
+          }
+        });
+
+        if($(this).data('is-current')) {
+          audio.play();
+        }
       }
     });
   }
@@ -31,14 +47,17 @@ function App() {
   useEffect(() => {
     setInterval(() => updatePoints(), 1000);
   }, []);
-
+  
   const Users = () => (
     <div id='users'>
       {users.sort((a,b) => { return a.author.displayName.localeCompare(b.author.displayName) }).map(user => {
           return (
-            <div id={user.author.accountId} className='user' style={{ display: 'flex' }}>
-              <span>User: {user.author.displayName}</span>
-              <span className='points' data-points={user.points}>{user.points}</span>
+            <div id={user.author.accountId} data-is-current={user.isCurrentUser ? true : false} className='user'>
+              <div className='user-info'>
+                <span className='user-name'>{user.author.displayName}</span>
+                <span className='user-level'>{user.level}</span>
+              </div>
+
               { !user.isCurrentUser && user.canAward && (
                 <button onClick={() => {
                   awardUser(user.author.accountId);
@@ -47,6 +66,8 @@ function App() {
               { !user.isCurrentUser && !user.canAward && (
                 <span>Již oceněn</span>
               ) }
+              
+              <span className='points' data-points={user.points}>{user.points}b</span>
             </div>
           );
         })}

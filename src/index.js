@@ -4,6 +4,11 @@ import api, { route, storage } from "@forge/api";
 const resolver = new Resolver();
 
 async function listUsers(issueKey) {
+  const issue = await api
+    .asUser()
+    .requestJira(route`/rest/api/3/issue/${issueKey}`);
+  const issueData = await issue.json();
+
   const comments = await api
     .asUser()
     .requestJira(route`/rest/api/3/issue/${issueKey}/comment`);
@@ -37,6 +42,10 @@ async function listUsers(issueKey) {
     authors.push(myselfData);
   }
 
+  if(authors.filter(author => author.accountId === issueData.fields.creator.accountId).length == 0) {
+    authors.push(issueData.fields.creator);
+  }
+
   return authors;
 };
 
@@ -50,6 +59,9 @@ async function addPointsToUser(accountId, pointsToAdd) {
     };    
   }
   data.points += pointsToAdd;
+  if(data.points > 0) {
+    data.level = Math.ceil(data.points / 500);
+  }
   storage.set(`gamification-${accountId}`, data);
   return true;
 };
@@ -82,7 +94,7 @@ resolver.define('get-users', async (d) => {
         isCurrentUser: accountId == requestedByAccountId,
         canAward: accountId == requestedByAccountId ? 
           false : 
-          awardHistory.awards.filter(award => award.accountId === accountId && award.issueKey === issueKey).length == 0
+          awardHistory.awards.filter(award => award.id === accountId && award.issueKey === issueKey).length == 0
       });
     } catch (error) {
       
@@ -137,19 +149,36 @@ resolver.define('get-points-for-user', async (d) => {
   return 0;
 });
 
-export async function listener(event) {
-  console.log(event)
-  const type = event.changelog.items[0].field;
+export async function listenerCreated(event) {
   const accountId = event.atlassianId;
-  let pointsToAdd = 0;
-
-  switch(type) {
-    case "assignee":
-      pointsToAdd = 10;
-      break;
-  }
+  const pointsToAdd = 5;
 
   return await addPointsToUser(accountId, pointsToAdd);
+}
+
+export async function listenerAssigned(event) {
+  const accountId = event.atlassianId;
+  const pointsToAdd = 5;
+  
+  return await addPointsToUser(accountId, pointsToAdd);
+}
+
+export async function listenerCommented(event) {
+  const accountId = event.atlassianId;
+  const pointsToAdd = 10;
+  
+  return await addPointsToUser(accountId, pointsToAdd);
+}
+
+export async function listenerUpdated(event) {
+
+  if(event.associatedStatuses != null) {
+    const accountId = event.atlassianId;
+    const pointsToAdd = 5;
+    return await addPointsToUser(accountId, pointsToAdd);
+  } else {
+    return false;
+  }
 }
 
 export const handler = resolver.getDefinitions();
