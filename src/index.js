@@ -79,7 +79,7 @@ async function addPointsToUser(accountId, pointsToAdd) {
   if(data.points > 0) {
     data.level = Math.ceil(data.points / 500);
   }
-  storage.set(`gamification-${accountId}`, data);
+  await storage.set(`gamification-${accountId}`, data);
   return true;
 };
 
@@ -107,7 +107,7 @@ resolver.define('get-users', async (d) => {
           level: 1,
           points: 0
         };
-        storage.set(`gamification-${accountId}`, data);
+        await storage.set(`gamification-${accountId}`, data);
       }
 
       users.push({
@@ -164,7 +164,7 @@ resolver.define('add-points', async (d) => {
   });
 
   // Save to storage
-  storage.set(`gamification-awards-${awardedByAccountId}`, awardHistory);
+  await storage.set(`gamification-awards-${awardedByAccountId}`, awardHistory);
 
   // Add points to user
   return await addPointsToUser(awardAccountId, 50);
