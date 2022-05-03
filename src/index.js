@@ -117,7 +117,7 @@ resolver.define('get-users', async (d) => {
         isCurrentUser: accountId == requestedByAccountId,
         canAward: accountId == requestedByAccountId ? 
           false : 
-          awardHistory.awards == null || awardHistory.awards.filter(award => award.id === accountId && award.issueKey === issueKey).length == 0
+          awardHistory == null || awardHistory.awards == null || awardHistory.awards.filter(award => award.id === accountId && award.issueKey === issueKey).length == 0
       });
     } catch (error) {
       
