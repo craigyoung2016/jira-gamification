@@ -1,0 +1,49 @@
+.user {
+    display: flex;
+    justify-content: space-between;
+}
+
+.user .user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user .user-info .user-name {
+    font-weight: bold;
+}
+
+.user .user-info .user-level {
+    font-weight: bold;
+    color: white;
+    background-color: #3396ff;
+    border-radius: 50%;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 14px;
+}
+
+.user button {
+    border: none;
+    color: white;
+    background-color: #3396ff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.user button:hover {
+    cursor: pointer;
+    box-shadow: 2px 3px 6px rgba(0,0,0, 0.2);
+}
+
+.user .points {
+    transition: 0.3s ease-in;
+}
+
+.user .points.points-changing {
+    color: #3396ff;
+    font-size: 16px;
+}

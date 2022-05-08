@@ -1,0 +1,57 @@
+modules:
+  jira:issuePanel:
+    - key: gamification
+      resource: main
+      resolver:
+        function: resolver
+      viewportSize: medium
+      title: Gamification
+      icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
+  trigger:
+    - key: triggerCreated
+      function: eventCreated
+      events: [ 'avi:jira:created:issue' ]
+    - key: triggerAssigned
+      function: eventAssigned
+      events: [ 'avi:jira:assigned:issue' ]
+    - key: triggerCommented
+      function: eventCommented
+      events: [ 'avi:jira:commented:issue' ]
+    - key: triggerUpdated
+      function: eventUpdated
+      events: [ 'avi:jira:updated:issue' ]
+  function:
+    - key: resolver
+      handler: index.handler
+    - key: eventCreated
+      handler: index.listenerCreated
+    - key: eventAssigned
+      handler: index.listenerAssigned
+    - key: eventCommented
+      handler: index.listenerCommented
+    - key: eventUpdated
+      handler: index.listenerUpdated
+resources:
+  - key: main
+    path: static/gamification/build
+app:
+  id: ari:cloud:ecosystem::app/851e3010-2d64-4778-9c23-7380d8f086c8
+permissions:
+  scopes:
+    - read:issue-security-level:jira
+    - read:issue.vote:jira
+    - read:field-configuration:jira
+    - read:issue:jira
+    - read:issue-type:jira
+    - read:status:jira
+    - storage:app
+    - read:comment:jira
+    - read:comment.property:jira
+    - read:group:jira
+    - read:project:jira
+    - read:project-role:jira
+    - read:user:jira
+    - read:avatar:jira
+    - read:issue-meta:jira
+    - read:issue.changelog:jira
+    - read:application-role:jira
