@@ -75,12 +75,11 @@ function App() {
               { !user.isCurrentUser && user.canAward && (
                 <button onClick={() => {
                   awardUser(user.author.accountId);
-                }}>Ocenit</button>
+                }}>Evaluate</button>
               ) }
               { !user.isCurrentUser && !user.canAward && (
-                <span>Již oceněn</span>
+                <span>Already Awarded</span>
               ) }
-              
               <span className='points' data-points={user.points}>{user.points}b</span>
             </div>
           );
@@ -90,7 +89,7 @@ function App() {
 
   return (
     <div>
-      {users ? (<Users />) : 'Načítání...'}
+      {users ? (<Users />) : 'Loading...'}
     </div>
   );
 }
